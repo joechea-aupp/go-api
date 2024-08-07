@@ -9,7 +9,6 @@ type application struct{}
 
 func main() {
 	servePort := "8080"
-
 	app := &application{}
 
 	fmt.Printf("Server is running on port %v", servePort)
