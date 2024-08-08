@@ -11,6 +11,7 @@ func (app *application) routes() *httprouter.Router {
 
 	// api endpoint
 	router.HandlerFunc(http.MethodGet, "/api/healthz", app.healthz)
+	router.HandlerFunc(http.MethodGet, "/api/user/:email", app.getUser)
 
 	// interface endpoint
 
