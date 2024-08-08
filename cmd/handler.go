@@ -4,11 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/joechea-aupp/go-api/internal/factory"
 	"github.com/julienschmidt/httprouter"
 )
-
-var User factory.User
 
 func (app *application) healthz(w http.ResponseWriter, r *http.Request) {
 	response := struct {
@@ -20,10 +17,11 @@ func (app *application) healthz(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) getUser(w http.ResponseWriter, r *http.Request) {
+	// userService := factory.NewUserService()
 	params := httprouter.ParamsFromContext(r.Context())
 	email := params.ByName("email")
 
-	user, err := User.GetUser(email)
+	user, err := app.User.GetUser(email)
 	if err != nil {
 
 		errormsg := struct {

@@ -11,17 +11,12 @@ import (
 	"github.com/joechea-aupp/go-api/internal/service"
 )
 
-type application struct{}
+type application struct {
+	User *factory.UserService
+}
 
 func main() {
-	/*
-	 When you declare var model models.Model, you're creating an instance of Model but without a pointer. To call the method with a pointer receiver, you need a pointer to an instance of Model.
-	*/
-	var User factory.User
-	// --------------------
-
 	servePort := "8080"
-	app := &application{}
 
 	mongoClient, err := service.ConnectToMongo()
 	if err != nil {
@@ -41,13 +36,8 @@ func main() {
 
 	service.New(mongoClient)
 
-	err = User.CreateUser(factory.User{
-		Username: "jack",
-		Email:    "jack@aupp.edu.kh",
-		Password: "password",
-	})
-	if err != nil {
-		panic(err)
+	app := &application{
+		User: factory.NewUserService(),
 	}
 
 	fmt.Printf("Server is running on port %v", servePort)

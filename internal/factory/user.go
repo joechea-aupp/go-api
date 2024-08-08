@@ -8,6 +8,7 @@ import (
 	"github.com/joechea-aupp/go-api/internal/service"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type User struct {
@@ -18,11 +19,20 @@ type User struct {
 	CreatedAt time.Time          `json:"created_at,omitempty" bson:"created_at,omitempty"`
 }
 
+type UserService struct {
+	Collection *mongo.Collection
+}
+
+func NewUserService() *UserService {
+	return &UserService{
+		Collection: service.Collection("users"),
+	}
+}
+
 // when declare method to a pointer, it is call pointer receiver.
 // pointer receiver is used to modify the value of the receiver.
-func (u *User) CreateUser(user User) error {
-	collection := service.Collection("users")
-	_, err := collection.InsertOne(context.TODO(), User{
+func (u *UserService) CreateUser(user User) error {
+	_, err := u.Collection.InsertOne(context.TODO(), User{
 		Username:  user.Username,
 		Email:     user.Email,
 		Password:  user.Password,
@@ -36,13 +46,12 @@ func (u *User) CreateUser(user User) error {
 	return nil
 }
 
-func (u *User) GetUser(email string) (User, error) {
+func (u *UserService) GetUser(email string) (User, error) {
 	var user User
 
-	collection := service.Collection("users")
 	filter := bson.D{primitive.E{Key: "email", Value: email}}
 
-	err := collection.FindOne(context.TODO(), filter).Decode(&user)
+	err := u.Collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
 		log.Println("error:", err)
 		return User{}, err
