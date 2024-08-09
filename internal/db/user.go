@@ -47,7 +47,6 @@ func (u *UserService) CreateUser(user User) error {
 
 func (u *UserService) GetUser(email string) (User, error) {
 	var user User
-
 	filter := bson.D{primitive.E{Key: "email", Value: email}}
 
 	err := u.Collection.FindOne(context.TODO(), filter).Decode(&user)
@@ -57,4 +56,20 @@ func (u *UserService) GetUser(email string) (User, error) {
 	}
 
 	return user, nil
+}
+
+func (u *UserService) GetUsers() ([]User, error) {
+	var users []User
+
+	log.Println("get users")
+	cursor, err := u.Collection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		panic(err)
+	}
+
+	if err = cursor.All(context.TODO(), &users); err != nil {
+		panic(err)
+	}
+
+	return users, nil
 }
