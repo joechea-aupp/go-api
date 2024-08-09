@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/joechea-aupp/go-api/internal/db"
@@ -55,21 +54,10 @@ func (app *application) getUsers(w http.ResponseWriter, _ *http.Request) {
 }
 
 func (app *application) postUser(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		errormsg := struct {
-			Error string `json:"error"`
-		}{
-			Error: fmt.Sprint("error: ", err),
-		}
-		responseWithJSON(w, http.StatusInternalServerError, errormsg)
-		return
-	}
-
 	defer r.Body.Close()
 
 	var data db.User
-	err = json.Unmarshal(body, &data)
+	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		errormsg := struct {
 			Error string `json:"error"`
