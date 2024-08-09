@@ -2,24 +2,29 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/joechea-aupp/go-api/internal/db"
 )
 
 type application struct {
-	User *db.UserService
+	User     *db.UserService
+	infoLog  *log.Logger
+	errorLog *log.Logger
 }
 
 func main() {
 	servePort := "8080"
 
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
 	mongoClient, err := db.ConnectToMongo()
 	if err != nil {
-		log.Panic(err)
+		errorLog.Println(err)
 	}
 
 	// create a context to timeout mongodb connection
@@ -36,10 +41,12 @@ func main() {
 	db.New(mongoClient)
 
 	app := &application{
-		User: db.NewUserService(),
+		User:     db.NewUserService(),
+		infoLog:  infoLog,
+		errorLog: errorLog,
 	}
 
-	fmt.Printf("Server is running on port %v", servePort)
+	infoLog.Printf("Server is running on port %v", servePort)
 	srv := &http.Server{
 		Addr:    ":" + servePort,
 		Handler: app.routes(),
@@ -47,6 +54,6 @@ func main() {
 
 	err = srv.ListenAndServe()
 	if err != nil {
-		fmt.Println(err)
+		errorLog.Println(err)
 	}
 }
