@@ -1,11 +1,10 @@
-package factory
+package db
 
 import (
 	"context"
 	"log"
 	"time"
 
-	"github.com/joechea-aupp/go-api/internal/service"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -25,7 +24,7 @@ type UserService struct {
 
 func NewUserService() *UserService {
 	return &UserService{
-		Collection: service.Collection("users"),
+		Collection: collection("users"),
 	}
 }
 

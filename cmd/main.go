@@ -7,18 +7,17 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/joechea-aupp/go-api/internal/factory"
-	"github.com/joechea-aupp/go-api/internal/service"
+	"github.com/joechea-aupp/go-api/internal/db"
 )
 
 type application struct {
-	User *factory.UserService
+	User *db.UserService
 }
 
 func main() {
 	servePort := "8080"
 
-	mongoClient, err := service.ConnectToMongo()
+	mongoClient, err := db.ConnectToMongo()
 	if err != nil {
 		log.Panic(err)
 	}
@@ -34,10 +33,10 @@ func main() {
 		}
 	}()
 
-	service.New(mongoClient)
+	db.New(mongoClient)
 
 	app := &application{
-		User: factory.NewUserService(),
+		User: db.NewUserService(),
 	}
 
 	fmt.Printf("Server is running on port %v", servePort)

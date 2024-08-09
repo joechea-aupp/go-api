@@ -1,4 +1,4 @@
-package service
+package db
 
 import (
 	"context"
@@ -27,6 +27,6 @@ func New(mongo *mongo.Client) {
 	client = mongo
 }
 
-func Collection(collection string) *mongo.Collection {
+func collection(collection string) *mongo.Collection {
 	return client.Database("go-api").Collection(collection)
 }
