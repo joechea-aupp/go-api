@@ -16,3 +16,13 @@ func responseWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.WriteHeader(code)
 	w.Write(response)
 }
+
+func responseWithError(w http.ResponseWriter, code int, message string) {
+	errorMsg := struct {
+		Error string `json:"error"`
+	}{
+		Error: message,
+	}
+
+	responseWithJSON(w, code, errorMsg)
+}

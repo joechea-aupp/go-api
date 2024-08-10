@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/joechea-aupp/go-api/internal/db"
@@ -19,19 +18,12 @@ func (app *application) healthz(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) getUser(w http.ResponseWriter, r *http.Request) {
-	// userService := factory.NewUserService()
 	params := httprouter.ParamsFromContext(r.Context())
 	email := params.ByName("email")
 
 	user, err := app.User.GetUser(email)
 	if err != nil {
-
-		errormsg := struct {
-			Error string `json:"error"`
-		}{
-			Error: fmt.Sprint("error: ", err),
-		}
-		responseWithJSON(w, http.StatusInternalServerError, errormsg)
+		responseWithError(w, http.StatusNotFound, "user not found")
 		return
 	}
 
@@ -41,12 +33,7 @@ func (app *application) getUser(w http.ResponseWriter, r *http.Request) {
 func (app *application) getUsers(w http.ResponseWriter, _ *http.Request) {
 	users, err := app.User.GetUsers()
 	if err != nil {
-		errormsg := struct {
-			Error string `json:"error"`
-		}{
-			Error: fmt.Sprint("error: ", err),
-		}
-		responseWithJSON(w, http.StatusInternalServerError, errormsg)
+		responseWithError(w, http.StatusNotFound, "user not found")
 		return
 	}
 
@@ -59,23 +46,13 @@ func (app *application) postUser(w http.ResponseWriter, r *http.Request) {
 	var data db.User
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
-		errormsg := struct {
-			Error string `json:"error"`
-		}{
-			Error: fmt.Sprint("error: ", err),
-		}
-		responseWithJSON(w, http.StatusInternalServerError, errormsg)
+		responseWithError(w, http.StatusBadRequest, "invalid request")
 		return
 	}
 
 	err = app.User.CreateUser(data)
 	if err != nil {
-		errormsg := struct {
-			Error string `json:"error"`
-		}{
-			Error: fmt.Sprint("error: ", err),
-		}
-		responseWithJSON(w, http.StatusInternalServerError, errormsg)
+		responseWithError(w, http.StatusInternalServerError, "failed to create user")
 		return
 	}
 
