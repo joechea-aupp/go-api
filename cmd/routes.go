@@ -11,7 +11,7 @@ func (app *application) routes() http.Handler {
 	router := httprouter.New()
 
 	// api endpoint
-	app.apiRoutes(router)
+	app.Api.Routes(router)
 
 	// interface endpoint
 

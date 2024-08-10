@@ -1,11 +1,11 @@
-package main
+package helper
 
 import (
 	"encoding/json"
 	"net/http"
 )
 
-func responseWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+func ResponseWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, err := json.Marshal(payload)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -17,12 +17,12 @@ func responseWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Write(response)
 }
 
-func responseWithError(w http.ResponseWriter, code int, message string) {
+func ResponseWithError(w http.ResponseWriter, code int, message string) {
 	errorMsg := struct {
 		Error string `json:"error"`
 	}{
 		Error: message,
 	}
 
-	responseWithJSON(w, code, errorMsg)
+	ResponseWithJSON(w, code, errorMsg)
 }

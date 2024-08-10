@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/joechea-aupp/go-api/cmd/api"
 	"github.com/joechea-aupp/go-api/internal/db"
 )
 
@@ -14,6 +15,7 @@ type application struct {
 	User     *db.UserService
 	infoLog  *log.Logger
 	errorLog *log.Logger
+	Api      *api.Api
 }
 
 func main() {
