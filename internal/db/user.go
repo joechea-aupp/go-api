@@ -61,7 +61,6 @@ func (u *UserService) GetUser(email string) (User, error) {
 func (u *UserService) GetUsers() ([]User, error) {
 	var users []User
 
-	log.Println("get users")
 	cursor, err := u.Collection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		panic(err)

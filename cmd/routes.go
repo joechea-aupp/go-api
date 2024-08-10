@@ -1,10 +1,13 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/julienschmidt/httprouter"
+	"github.com/justinas/alice"
 )
 
-func (app *application) routes() *httprouter.Router {
+func (app *application) routes() http.Handler {
 	router := httprouter.New()
 
 	// api endpoint
@@ -12,5 +15,7 @@ func (app *application) routes() *httprouter.Router {
 
 	// interface endpoint
 
-	return router
+	standard := alice.New(app.logRequest)
+
+	return standard.Then(router)
 }
