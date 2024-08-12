@@ -60,22 +60,13 @@ func (api *Api) postUser(w http.ResponseWriter, r *http.Request) {
 	helper.ResponseWithJSON(w, http.StatusCreated, "created")
 }
 
-type DeleteUser struct {
-	ID string `json:"id"`
-}
-
 func (api *Api) deleteUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
-	var userID DeleteUser
+	params := httprouter.ParamsFromContext(r.Context())
+	id := params.ByName("id")
 
-	err := json.NewDecoder(r.Body).Decode(&userID)
-	if err != nil {
-		helper.ResponseWithError(w, http.StatusBadRequest, "invalid request")
-		return
-	}
-
-	err = api.User.DelUser(userID.ID)
+	err := api.User.DelUser(id)
 	if err != nil {
 		helper.ResponseWithError(w, http.StatusInternalServerError, "failed to delete user")
 		return
