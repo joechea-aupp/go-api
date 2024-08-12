@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -31,13 +32,19 @@ func NewUserService() *UserService {
 // when declare method to a pointer, it is call pointer receiver.
 // pointer receiver is used to modify the value of the receiver.
 func (u *UserService) CreateUser(user User) error {
-	_, err := u.Collection.InsertOne(context.TODO(), User{
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
+	if err != nil {
+		log.Println("error:", err)
+		return err
+	}
+
+	if _, err := u.Collection.InsertOne(context.TODO(), User{
 		Username:  user.Username,
 		Email:     user.Email,
-		Password:  user.Password,
+		Password:  string(hash),
 		CreatedAt: time.Now(),
-	})
-	if err != nil {
+	}); err != nil {
+
 		log.Println("error:", err)
 		return err
 	}
