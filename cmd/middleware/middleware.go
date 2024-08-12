@@ -36,7 +36,9 @@ func (mid *Middleware) VerifyAuth(next http.Handler) http.Handler {
 			tokenStr = tokenStr[7:]
 		}
 
-		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		claims := &helper.Claims{}
+
+		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
@@ -47,6 +49,10 @@ func (mid *Middleware) VerifyAuth(next http.Handler) http.Handler {
 			helper.ResponseWithError(w, http.StatusUnauthorized, err.Error())
 			return
 		}
+
+		// get data from claim
+		// log.Println("user is: ", claims.Username)
+		// log.Println("expired at: ", claims.ExpiresAt)
 
 		next.ServeHTTP(w, r)
 	})

@@ -116,7 +116,7 @@ func (api *Api) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := helper.GenerateJWT()
+	token, err := helper.GenerateJWT(user.Username, user.Email)
 	if err != nil {
 		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
 		return

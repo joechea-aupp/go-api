@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -46,9 +47,22 @@ func ResponseWithError(w http.ResponseWriter, code int, message string) {
 	ResponseWithJSON(w, code, errorMsg)
 }
 
-func GenerateJWT() (string, error) {
-	claims := jwt.MapClaims{
-		"authorized": true,
+type Claims struct {
+	Authorized bool   `json:"authorized"`
+	Username   string `json:"username"`
+	Email      string `json:"email"`
+	jwt.RegisteredClaims
+}
+
+func GenerateJWT(username, email string) (string, error) {
+	claims := &Claims{
+		Authorized: true,
+		Username:   username,
+		Email:      email,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
