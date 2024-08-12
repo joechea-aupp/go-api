@@ -52,9 +52,9 @@ func (u *UserService) CreateUser(user User) error {
 	return nil
 }
 
-func (u *UserService) GetUser(email string) (User, error) {
+func (u *UserService) GetUser(username string) (User, error) {
 	var user User
-	filter := bson.D{primitive.E{Key: "email", Value: email}}
+	filter := bson.D{primitive.E{Key: "username", Value: username}}
 
 	err := u.Collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {

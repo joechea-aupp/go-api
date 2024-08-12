@@ -7,6 +7,7 @@ import (
 	"github.com/joechea-aupp/go-api/cmd/helper"
 	"github.com/joechea-aupp/go-api/internal/db"
 	"github.com/julienschmidt/httprouter"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (api *Api) healthz(w http.ResponseWriter, r *http.Request) {
@@ -93,4 +94,27 @@ func (api *Api) updateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helper.ResponseWithJSON(w, http.StatusOK, "updated")
+}
+
+func (api *Api) signin(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	var data db.User
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		helper.ResponseWithError(w, http.StatusBadRequest, "invalid request")
+		return
+	}
+
+	user, err := api.User.GetUser(data.Username)
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusUnauthorized, "invalid username or password")
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(data.Password)); err != nil {
+		helper.ResponseWithError(w, http.StatusUnauthorized, "invalid username or password")
+		return
+	}
+
+	helper.ResponseWithJSON(w, http.StatusOK, "signed in")
 }
