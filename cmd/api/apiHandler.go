@@ -83,3 +83,23 @@ func (api *Api) deleteUser(w http.ResponseWriter, r *http.Request) {
 
 	helper.ResponseWithJSON(w, http.StatusOK, "deleted")
 }
+
+func (api *Api) updateUser(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	params := httprouter.ParamsFromContext(r.Context())
+	id := params.ByName("id")
+
+	var data db.User
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		helper.ResponseWithError(w, http.StatusBadRequest, "invalid request")
+		return
+	}
+
+	if err := api.User.UpdateUser(id, data); err != nil {
+		helper.ResponseWithError(w, http.StatusInternalServerError, "failed to update user")
+		return
+	}
+
+	helper.ResponseWithJSON(w, http.StatusOK, "updated")
+}

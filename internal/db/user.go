@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -81,14 +80,30 @@ func (u *UserService) DelUser(id string) error {
 		return err
 	}
 
-	filter := bson.D{primitive.E{Key: "_id", Value: objectID}}
-	// filter := bson.D{{"_id", id}}
-	result, err := u.Collection.DeleteOne(context.TODO(), filter)
+	filter := bson.D{{Key: "_id", Value: objectID}}
+	_, err = u.Collection.DeleteOne(context.TODO(), filter)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Deleted document %v", result.DeletedCount)
+	return nil
+}
+
+func (u *UserService) UpdateUser(id string, data User) error {
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.D{{Key: "_id", Value: objectID}}
+
+	update := bson.D{
+		{Key: "$set", Value: data},
+	}
+
+	if _, err := u.Collection.UpdateOne(context.TODO(), filter, update); err != nil {
+		return err
+	}
 
 	return nil
 }

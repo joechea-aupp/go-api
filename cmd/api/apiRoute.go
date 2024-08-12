@@ -21,4 +21,5 @@ func (api *Api) Routes(router *httprouter.Router) {
 	router.HandlerFunc(http.MethodGet, "/api/users", app.getUsers)
 	router.HandlerFunc(http.MethodPost, "/api/user", app.postUser)
 	router.HandlerFunc(http.MethodDelete, "/api/user", app.deleteUser)
+	router.HandlerFunc(http.MethodPatch, "/api/user/:id", app.updateUser)
 }
