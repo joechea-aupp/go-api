@@ -2,31 +2,31 @@ package main
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/joechea-aupp/go-api/cmd/api"
+	"github.com/joechea-aupp/go-api/cmd/helper"
+	"github.com/joechea-aupp/go-api/cmd/middleware"
 	"github.com/joechea-aupp/go-api/internal/db"
+	"github.com/joho/godotenv"
 )
 
 type application struct {
-	User     *db.UserService
-	infoLog  *log.Logger
-	errorLog *log.Logger
-	Api      *api.Api
+	User       *db.UserService
+	Api        *api.Api
+	Middleware *middleware.Middleware
 }
 
 func main() {
-	servePort := "8080"
-
-	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
-	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	godotenv.Load(".env")
+	servePort := os.Getenv("PORT")
+	feed := helper.NewServerFeed()
 
 	mongoClient, err := db.ConnectToMongo()
 	if err != nil {
-		errorLog.Println(err)
+		feed.ErrorLog.Println(err)
 	}
 
 	// create a context to timeout mongodb connection
@@ -43,12 +43,10 @@ func main() {
 	db.New(mongoClient)
 
 	app := &application{
-		User:     db.NewUserService(),
-		infoLog:  infoLog,
-		errorLog: errorLog,
+		User: db.NewUserService(),
 	}
 
-	infoLog.Printf("Server is running on port %v", servePort)
+	feed.InfoLog.Printf("Server is running on port %v", servePort)
 	srv := &http.Server{
 		Addr:    ":" + servePort,
 		Handler: app.routes(),
@@ -56,6 +54,6 @@ func main() {
 
 	err = srv.ListenAndServe()
 	if err != nil {
-		errorLog.Println(err)
+		feed.ErrorLog.Println(err)
 	}
 }

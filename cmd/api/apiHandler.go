@@ -116,5 +116,17 @@ func (api *Api) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	helper.ResponseWithJSON(w, http.StatusOK, "signed in")
+	token, err := helper.GenerateJWT()
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response := struct {
+		Token string `json:"token"`
+	}{
+		Token: token,
+	}
+
+	helper.ResponseWithJSON(w, http.StatusOK, response)
 }

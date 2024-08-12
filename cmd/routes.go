@@ -15,7 +15,7 @@ func (app *application) routes() http.Handler {
 
 	// interface endpoint
 
-	standard := alice.New(app.logRequest)
+	standard := alice.New(app.Middleware.LogRequest)
 
 	return standard.Then(router)
 }
