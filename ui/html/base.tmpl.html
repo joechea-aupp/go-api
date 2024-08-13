@@ -1,18 +1,29 @@
 {{define "base"}}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="/assets/css/main.css" rel="stylesheet">
-		<title>Todo</title>
-</head>
-<body>
-	<p>Hello world</p>	
-	<h1 class="text-3xl font-bold underline">
-    Hello world!
-	</h1>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/main.css" />
+    <title>Todo</title>
+  </head>
+  <body
+    class="flex flex-col justify-between bg-slate-200 min-h-screen text-slate-200"
+  >
+    <div class="flex justify-center items-center bg-slate-500 h-12">
+      <div class="">Page title</div>
+    </div>
+    <div class="flex justify-center">
+      <div
+        class="w-72 h-72 bg-slate-500 text-center flex items-center justify-center"
+      >
+        Content Content Content Content Content
+      </div>
+    </div>
+    <div class="flex justify-center items-center h-12 bg-slate-500">
+      <div class="">Footer</div>
+    </div>
+  </body>
 </html>
 {{end}}

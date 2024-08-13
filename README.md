@@ -5,7 +5,7 @@ cp example_env .env
 
 recompile tailwind css using the following command
 ```bash
-npx tailwindcss -i ./ui/assets/source.css -o ./ui/assets/main.css
+npx tailwindcss -i ./ui/assets/source.css -o ./ui/assets/main.css --watch
 ```
 
 start the project, make sure you have go air installed https://github.com/air-verse/air
