@@ -9,6 +9,7 @@ import (
 	"github.com/joechea-aupp/go-api/cmd/api"
 	"github.com/joechea-aupp/go-api/cmd/helper"
 	"github.com/joechea-aupp/go-api/cmd/middleware"
+	"github.com/joechea-aupp/go-api/cmd/web"
 	"github.com/joechea-aupp/go-api/internal/db"
 	"github.com/joho/godotenv"
 )
@@ -16,6 +17,7 @@ import (
 type application struct {
 	User       *db.UserService
 	Api        *api.Api
+	Web        *web.Web
 	Middleware *middleware.Middleware
 }
 
