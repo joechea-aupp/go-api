@@ -24,3 +24,6 @@ func (web *Web) user(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (web *Web) count(w http.ResponseWriter, r *http.Request) {
+}
