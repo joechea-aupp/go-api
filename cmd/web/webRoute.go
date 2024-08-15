@@ -9,7 +9,8 @@ import (
 )
 
 type Web struct {
-	User *db.UserService
+	User  *db.UserService
+	Count int
 }
 
 func (web *Web) Routes(router *httprouter.Router) {
@@ -23,4 +24,6 @@ func (web *Web) Routes(router *httprouter.Router) {
 	router.Handler(http.MethodGet, "/assets/*filepath", fileServer)
 
 	router.HandlerFunc(http.MethodGet, "/user", app.user)
+	router.HandlerFunc(http.MethodGet, "/count", app.count)
+	router.HandlerFunc(http.MethodPost, "/count", app.postCount)
 }

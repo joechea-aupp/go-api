@@ -1,0 +1,8 @@
+{{define "main"}}
+
+<div id="count">{{.Count}}</div>
+<button hx-post="/count" hx-target="#count" hx-swap="outerHTML">
+  Increment
+</button>
+
+{{end}
