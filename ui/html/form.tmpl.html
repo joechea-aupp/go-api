@@ -1,11 +1,23 @@
 {{define "main"}}
 
-<form>
+<!-- <form> -->
+<!--   <input type="text" name="firstname" placeholder="Firstname" /> -->
+<!--   <input type="text" name="lastname" placeholder="Lastname" /> -->
+<!--   <button hx-post="/form" hx-target="#user-data" hx-swap="innerHTML"> -->
+<!--     Add -->
+<!--   </button> -->
+<!-- </form> -->
+
+<form
+  action="/form"
+  method="post"
+  hx-boost="true"
+  hx-target="#user-data"
+  hx-swap="innerHTML"
+>
   <input type="text" name="firstname" placeholder="Firstname" />
   <input type="text" name="lastname" placeholder="Lastname" />
-  <button hx-post="/form" hx-target="#user-data" hx-swap="innerHTML">
-    Add
-  </button>
+  <button>Add</button>
 </form>
 
 <div id="user-data">
