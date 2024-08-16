@@ -47,6 +47,12 @@ func ResponseWithError(w http.ResponseWriter, code int, message string) {
 	ResponseWithJSON(w, code, errorMsg)
 }
 
+func ResponseWithHyperMedia(w http.ResponseWriter, code int, htmlString string) {
+	w.Header().Set("Content-Type", "text/html")
+	w.WriteHeader(code)
+	w.Write([]byte(htmlString))
+}
+
 type Claims struct {
 	Authorized bool   `json:"authorized"`
 	Username   string `json:"username"`

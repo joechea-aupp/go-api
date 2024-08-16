@@ -59,9 +59,7 @@ func (web *Web) postCount(w http.ResponseWriter, _ *http.Request) {
 		Count: web.Form.Count,
 	}
 	response := fmt.Sprintf(`<div id="count">%d</div>`, data.Count)
-	w.Header().Set("Content-Type", "text/html")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(response))
+	helper.ResponseWithHyperMedia(w, http.StatusOK, response)
 }
 
 func (web *Web) getForm(w http.ResponseWriter, r *http.Request) {
@@ -99,7 +97,5 @@ func (web *Web) postForm(w http.ResponseWriter, r *http.Request) {
 		 <li>Last Name: %s</li>
 		</ui>
 		`, web.Form.FirstName, web.Form.LastName)
-	w.Header().Set("Content-Type", "text/html")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(response))
+	helper.ResponseWithHyperMedia(w, http.StatusOK, response)
 }
