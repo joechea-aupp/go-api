@@ -1,0 +1,15 @@
+{{define "main"}}
+
+<form>
+  <input type="text" name="firstname" placeholder="Firstname" />
+  <input type="text" name="lastname" placeholder="Lastname" />
+  <button hx-post="/form" hx-target="#user-data" hx-swap="innerHTML">
+    Add
+  </button>
+</form>
+
+<div id="user-data">
+  <!--User data shall be plug in here-->
+</div>
+
+{{end}}

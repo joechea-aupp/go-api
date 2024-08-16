@@ -9,13 +9,20 @@ import (
 )
 
 type Web struct {
-	User  *db.UserService
-	Count int
+	User *db.UserService
+	Form *Form
+}
+
+type Form struct {
+	FirstName string
+	LastName  string
+	Count     int
 }
 
 func (web *Web) Routes(router *httprouter.Router) {
 	app := &Web{
 		User: db.NewUserService(),
+		Form: &Form{},
 	}
 
 	// fileserver return http.handler, no need for handlerfunc.
@@ -26,4 +33,6 @@ func (web *Web) Routes(router *httprouter.Router) {
 	router.HandlerFunc(http.MethodGet, "/user", app.user)
 	router.HandlerFunc(http.MethodGet, "/count", app.count)
 	router.HandlerFunc(http.MethodPost, "/count", app.postCount)
+	router.HandlerFunc(http.MethodGet, "/form", app.getForm)
+	router.HandlerFunc(http.MethodPost, "/form", app.postForm)
 }
