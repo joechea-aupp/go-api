@@ -54,7 +54,6 @@ func (web *Web) postCount(w http.ResponseWriter, r *http.Request) {
 }
 
 func (web *Web) getForm(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("getForm")
 	web.render(w, http.StatusOK, "form.tmpl.html", web.templateData)
 }
 
