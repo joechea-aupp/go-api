@@ -9,22 +9,25 @@ import (
 	// "github.com/julienschmidt/httprouter"
 )
 
+func (web *Web) render(w http.ResponseWriter, status int, page string, data *templateData) {
+	ts, ok := web.templateCache[page]
+	if !ok {
+		err := fmt.Errorf("the template %s does not exist", page)
+		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	w.WriteHeader(status)
+
+	err := ts.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+}
+
 func (web *Web) user(w http.ResponseWriter, r *http.Request) {
-	files := []string{
-		"./ui/html/base.tmpl.html",
-	}
-
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	err = ts.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
+	web.render(w, http.StatusOK, "user.tmpl.html", nil)
 }
 
 type countData struct {

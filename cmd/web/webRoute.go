@@ -1,6 +1,7 @@
 package web
 
 import (
+	"html/template"
 	"net/http"
 
 	"github.com/joechea-aupp/go-api/internal/db"
@@ -9,8 +10,9 @@ import (
 )
 
 type Web struct {
-	User *db.UserService
-	Form *Form
+	User          *db.UserService
+	Form          *Form
+	templateCache map[string]*template.Template
 }
 
 type Form struct {
@@ -20,9 +22,15 @@ type Form struct {
 }
 
 func (web *Web) Routes(router *httprouter.Router) {
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		panic(err)
+	}
+
 	app := &Web{
-		User: db.NewUserService(),
-		Form: &Form{},
+		User:          db.NewUserService(),
+		Form:          &Form{},
+		templateCache: templateCache,
 	}
 
 	// fileserver return http.handler, no need for handlerfunc.

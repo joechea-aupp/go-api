@@ -19,7 +19,8 @@
     <title>Todo</title>
   </head>
   <body hx-boost="true">
-    <h1>Todo</h1>
+    {{ template "nav" . }}
+
     <a href="/form">form</a>
     <a href="/count">count</a>
     {{template "main" .}}
