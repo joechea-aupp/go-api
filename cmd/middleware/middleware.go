@@ -11,15 +11,24 @@ import (
 
 type Middleware struct {
 	ServerFeed *helper.ServerFeed
+	Web        map[string]string
 }
 
-var feed = &Middleware{
+var Feed = &Middleware{
 	ServerFeed: helper.NewServerFeed(),
+	Web:        map[string]string{},
 }
 
 func (mid *Middleware) LogRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		feed.ServerFeed.InfoLog.Printf("%s - %s %s %s", r.RemoteAddr, r.Proto, r.Method, r.URL.RequestURI())
+		Feed.ServerFeed.InfoLog.Printf("%s - %s %s %s", r.RemoteAddr, r.Proto, r.Method, r.URL.RequestURI())
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (mid *Middleware) LogURL(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		Feed.Web["path"] = r.URL.Path
 		next.ServeHTTP(w, r)
 	})
 }

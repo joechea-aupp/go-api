@@ -4,43 +4,43 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/joechea-aupp/go-api/cmd/middleware"
 	"github.com/joechea-aupp/go-api/internal/db"
 	"github.com/joechea-aupp/go-api/ui"
 	"github.com/julienschmidt/httprouter"
+	"github.com/justinas/alice"
 )
 
 type Web struct {
 	User          *db.UserService
-	Form          *Form
 	templateCache map[string]*template.Template
+	templateData  *ui.TemplateData
 }
 
-type Form struct {
-	FirstName string
-	LastName  string
-	Count     int
-}
+var mid = &middleware.Middleware{}
 
 func (web *Web) Routes(router *httprouter.Router) {
-	templateCache, err := newTemplateCache()
+	templateCache, err := ui.NewTemplateCache()
 	if err != nil {
 		panic(err)
 	}
 
 	app := &Web{
 		User:          db.NewUserService(),
-		Form:          &Form{},
 		templateCache: templateCache,
+		templateData:  &ui.TemplateData{},
 	}
+
+	webLog := alice.New(mid.LogURL)
 
 	// fileserver return http.handler, no need for handlerfunc.
 	// http.FS converts the embedded filesystem into an http.FileSystem interface that the http.FilServer can use.
 	fileServer := http.FileServer(http.FS(ui.Files))
 	router.Handler(http.MethodGet, "/assets/*filepath", fileServer)
 
-	router.HandlerFunc(http.MethodGet, "/user", app.user)
-	router.HandlerFunc(http.MethodGet, "/count", app.count)
-	router.HandlerFunc(http.MethodPost, "/count", app.postCount)
-	router.HandlerFunc(http.MethodGet, "/form", app.getForm)
-	router.HandlerFunc(http.MethodPost, "/form", app.postForm)
+	router.Handler(http.MethodGet, "/user", webLog.ThenFunc(app.user))
+	router.Handler(http.MethodGet, "/count", webLog.ThenFunc(app.count))
+	router.Handler(http.MethodPost, "/count/:mode", webLog.ThenFunc(app.postCount))
+	router.Handler(http.MethodGet, "/form", webLog.ThenFunc(app.getForm))
+	// router.Handler(http.MethodPost, "/form",webLog.ThenFunc ( app.postForm ))
 }

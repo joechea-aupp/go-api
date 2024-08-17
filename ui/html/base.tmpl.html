@@ -18,12 +18,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Todo</title>
   </head>
-  <body hx-boost="true">
+  <body class="bg-slate-200" hx-boost="true">
     {{ template "nav" . }}
 
-    <a href="/form">form</a>
-    <a href="/count">count</a>
-    {{template "main" .}}
+    <div class="flex justify-center items-center">
+      <div class="my-20 w-1/2 p-10 h-screen border-solid border-2 bg-slate-300">
+        {{template "main" .}}
+      </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
   </body>
