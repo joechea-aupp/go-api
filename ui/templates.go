@@ -3,6 +3,7 @@ package ui
 import (
 	"html/template"
 	"path/filepath"
+	"time"
 
 	"github.com/joechea-aupp/go-api/cmd/middleware"
 	"github.com/joechea-aupp/go-api/internal/db"
@@ -16,9 +17,18 @@ type TemplateData struct {
 	Test  string
 }
 
+func humanDate(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+
+	return t.UTC().Format("02 Jan 2006 at 15:04")
+}
+
 func NewTemplateCache() (map[string]*template.Template, error) {
 	functions := template.FuncMap{
 		"currentURL": func() string { return middleware.Feed.Web["path"] },
+		"humanDate":  humanDate,
 	}
 	cache := map[string]*template.Template{}
 
