@@ -42,5 +42,5 @@ func (web *Web) Routes(router *httprouter.Router) {
 	router.Handler(http.MethodGet, "/count", webLog.ThenFunc(app.count))
 	router.Handler(http.MethodPost, "/count/:mode", webLog.ThenFunc(app.postCount))
 	router.Handler(http.MethodGet, "/form", webLog.ThenFunc(app.getForm))
-	// router.Handler(http.MethodPost, "/form",webLog.ThenFunc ( app.postForm ))
+	router.Handler(http.MethodPost, "/form", webLog.ThenFunc(app.postForm))
 }

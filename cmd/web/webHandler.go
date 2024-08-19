@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/joechea-aupp/go-api/cmd/helper"
+	"github.com/joechea-aupp/go-api/internal/db"
 	"github.com/joechea-aupp/go-api/ui"
 	"github.com/julienschmidt/httprouter"
 )
@@ -64,21 +65,35 @@ func (web *Web) getForm(w http.ResponseWriter, r *http.Request) {
 	web.render(w, http.StatusOK, "form.tmpl.html", web.templateData)
 }
 
-// func (web *Web) postForm(w http.ResponseWriter, r *http.Request) {
-// 	err := r.ParseForm()
-// 	if err != nil {
-// 		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
-//
-// 	web.Form.FirstName = r.FormValue("firstname")
-// 	web.Form.LastName = r.FormValue("lastname")
-//
-// 	response := fmt.Sprintf(`
-// 		<ui>
-// 			<li>First Name: %s</li>
-// 		 <li>Last Name: %s</li>
-// 		</ui>
-// 		`, web.Form.FirstName, web.Form.LastName)
-// 	helper.ResponseWithHyperMedia(w, http.StatusOK, response)
-// }
+func (web *Web) postForm(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	username := r.Form.Get("floating_username")
+	email := r.Form.Get("floating_email")
+	password := r.Form.Get("floating_password")
+	repeatPassword := r.Form.Get("repeat_password")
+
+	if password != repeatPassword {
+		helper.ResponseWithError(w, http.StatusBadRequest, "passwords do not match")
+		return
+	}
+
+	user := db.User{
+		Username: username,
+		Email:    email,
+		Password: password,
+	}
+
+	err = web.User.CreateUser(user)
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// redirect user to /user with status code of 303
+	http.Redirect(w, r, "/user", http.StatusSeeOther)
+}
