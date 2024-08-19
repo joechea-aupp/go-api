@@ -10,6 +10,7 @@ import (
 
 type TemplateData struct {
 	User  *db.User
+	Users []db.User
 	Count int
 	URL   map[string]string
 	Test  string

@@ -27,7 +27,14 @@ func (web *Web) render(w http.ResponseWriter, status int, page string, data *ui.
 }
 
 func (web *Web) user(w http.ResponseWriter, r *http.Request) {
-	web.render(w, http.StatusOK, "user.tmpl.html", nil)
+	users, err := web.User.GetUsers()
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	web.templateData.Users = users
+	web.render(w, http.StatusOK, "user.tmpl.html", web.templateData)
 }
 
 func (web *Web) count(w http.ResponseWriter, r *http.Request) {
