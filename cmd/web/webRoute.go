@@ -44,6 +44,7 @@ func (web *Web) Routes(router *httprouter.Router, sessionManager *scs.SessionMan
 	router.Handler(http.MethodGet, "/users", webLog.ThenFunc(app.users))
 	router.Handler(http.MethodGet, "/user/:username", webLog.ThenFunc(app.user))
 	router.Handler(http.MethodPatch, "/user/:id", webLog.ThenFunc(app.updateUser))
+	router.Handler(http.MethodDelete, "/user/:id", webLog.ThenFunc(app.deleteUser))
 	router.Handler(http.MethodGet, "/count", webLog.ThenFunc(app.count))
 	router.Handler(http.MethodPost, "/count/:mode", webLog.ThenFunc(app.postCount))
 	router.Handler(http.MethodGet, "/form", webLog.ThenFunc(app.getForm))

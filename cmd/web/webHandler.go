@@ -90,6 +90,21 @@ func (web *Web) updateUser(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/users", http.StatusSeeOther)
 }
 
+func (web *Web) deleteUser(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	id := params.ByName("id")
+
+	err := web.User.DelUser(id)
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	web.sessionManager.Put(r.Context(), "flash", "User deleted successfully")
+
+	http.Redirect(w, r, "/users", http.StatusSeeOther)
+}
+
 func (web *Web) count(w http.ResponseWriter, r *http.Request) {
 	web.render(w, http.StatusOK, "count.tmpl.html", web.templateData)
 }
@@ -149,5 +164,5 @@ func (web *Web) postForm(w http.ResponseWriter, r *http.Request) {
 	web.sessionManager.Put(r.Context(), "flash", "User created successfully")
 
 	// redirect user to /user with status code of 303
-	http.Redirect(w, r, "/user", http.StatusSeeOther)
+	http.Redirect(w, r, "/users", http.StatusSeeOther)
 }
