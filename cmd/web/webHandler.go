@@ -27,7 +27,7 @@ func (web *Web) render(w http.ResponseWriter, status int, page string, data *ui.
 	}
 }
 
-func (web *Web) user(w http.ResponseWriter, r *http.Request) {
+func (web *Web) users(w http.ResponseWriter, r *http.Request) {
 	users, err := web.User.GetUsers()
 	if err != nil {
 		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
@@ -37,7 +37,57 @@ func (web *Web) user(w http.ResponseWriter, r *http.Request) {
 	web.templateData.Users = users
 
 	web.templateData.Flash = web.sessionManager.PopString(r.Context(), "flash")
+	web.render(w, http.StatusOK, "users.tmpl.html", web.templateData)
+}
+
+func (web *Web) user(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	username := params.ByName("username")
+
+	user, err := web.User.GetUser(username)
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	data := &db.User{
+		ID:        user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+	}
+
+	web.templateData.User = data
 	web.render(w, http.StatusOK, "user.tmpl.html", web.templateData)
+}
+
+func (web *Web) updateUser(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	id := params.ByName("id")
+
+	err := r.ParseForm()
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	username := r.Form.Get("floating_username")
+	email := r.Form.Get("floating_email")
+
+	user := db.User{
+		Username: username,
+		Email:    email,
+	}
+
+	err = web.User.UpdateUser(id, user)
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	web.sessionManager.Put(r.Context(), "flash", "User updated successfully")
+
+	http.Redirect(w, r, "/users", http.StatusSeeOther)
 }
 
 func (web *Web) count(w http.ResponseWriter, r *http.Request) {

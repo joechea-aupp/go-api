@@ -7,6 +7,7 @@ import (
 
 	"github.com/joechea-aupp/go-api/cmd/middleware"
 	"github.com/joechea-aupp/go-api/internal/db"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type TemplateData struct {
@@ -25,10 +26,15 @@ func humanDate(t time.Time) string {
 	return t.UTC().Format("02 Jan 2006 at 15:04")
 }
 
+func objIDString(id primitive.ObjectID) string {
+	return id.Hex()
+}
+
 func NewTemplateCache() (map[string]*template.Template, error) {
 	functions := template.FuncMap{
-		"currentURL": func() string { return middleware.Feed.Web["path"] },
-		"humanDate":  humanDate,
+		"currentURL":  func() string { return middleware.Feed.Web["path"] },
+		"humanDate":   humanDate,
+		"objIDString": objIDString,
 	}
 	cache := map[string]*template.Template{}
 
