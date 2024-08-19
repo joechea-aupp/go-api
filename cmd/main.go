@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/alexedwards/scs/mongodbstore"
+	"github.com/alexedwards/scs/v2"
 	"github.com/joechea-aupp/go-api/cmd/api"
 	"github.com/joechea-aupp/go-api/cmd/helper"
 	"github.com/joechea-aupp/go-api/cmd/middleware"
@@ -15,10 +17,11 @@ import (
 )
 
 type application struct {
-	User       *db.UserService
-	Api        *api.Api
-	Web        *web.Web
-	Middleware *middleware.Middleware
+	User           *db.UserService
+	Api            *api.Api
+	Web            *web.Web
+	Middleware     *middleware.Middleware
+	sessionManager *scs.SessionManager
 }
 
 func main() {
@@ -44,8 +47,12 @@ func main() {
 
 	db.New(mongoClient)
 
+	sessionManager := scs.New()
+	sessionManager.Store = mongodbstore.New(mongoClient.Database("go-api"))
+
 	app := &application{
-		User: db.NewUserService(),
+		User:           db.NewUserService(),
+		sessionManager: sessionManager,
 	}
 
 	feed.InfoLog.Printf("Server is running on port %v", servePort)

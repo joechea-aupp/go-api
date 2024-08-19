@@ -35,6 +35,8 @@ func (web *Web) user(w http.ResponseWriter, r *http.Request) {
 	}
 
 	web.templateData.Users = users
+
+	web.templateData.Flash = web.sessionManager.PopString(r.Context(), "flash")
 	web.render(w, http.StatusOK, "user.tmpl.html", web.templateData)
 }
 
@@ -93,6 +95,8 @@ func (web *Web) postForm(w http.ResponseWriter, r *http.Request) {
 		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	web.sessionManager.Put(r.Context(), "flash", "User created successfully")
 
 	// redirect user to /user with status code of 303
 	http.Redirect(w, r, "/user", http.StatusSeeOther)

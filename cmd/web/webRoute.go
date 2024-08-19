@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/alexedwards/scs/v2"
 	"github.com/joechea-aupp/go-api/cmd/middleware"
 	"github.com/joechea-aupp/go-api/internal/db"
 	"github.com/joechea-aupp/go-api/ui"
@@ -12,26 +13,28 @@ import (
 )
 
 type Web struct {
-	User          *db.UserService
-	templateCache map[string]*template.Template
-	templateData  *ui.TemplateData
+	User           *db.UserService
+	templateCache  map[string]*template.Template
+	templateData   *ui.TemplateData
+	sessionManager *scs.SessionManager
 }
 
 var mid = &middleware.Middleware{}
 
-func (web *Web) Routes(router *httprouter.Router) {
+func (web *Web) Routes(router *httprouter.Router, sessionManager *scs.SessionManager) {
 	templateCache, err := ui.NewTemplateCache()
 	if err != nil {
 		panic(err)
 	}
 
 	app := &Web{
-		User:          db.NewUserService(),
-		templateCache: templateCache,
-		templateData:  &ui.TemplateData{},
+		User:           db.NewUserService(),
+		templateCache:  templateCache,
+		templateData:   &ui.TemplateData{},
+		sessionManager: sessionManager,
 	}
 
-	webLog := alice.New(mid.LogURL)
+	webLog := alice.New(app.sessionManager.LoadAndSave, mid.LogURL)
 
 	// fileserver return http.handler, no need for handlerfunc.
 	// http.FS converts the embedded filesystem into an http.FileSystem interface that the http.FilServer can use.

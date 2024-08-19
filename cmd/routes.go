@@ -12,10 +12,9 @@ func (app *application) routes() http.Handler {
 
 	// api endpoint
 	app.Api.Routes(router)
-	app.Web.Routes(router)
+	app.Web.Routes(router, app.sessionManager)
 
 	// interface endpoint
-
 	standard := alice.New(app.Middleware.LogRequest)
 
 	return standard.Then(router)

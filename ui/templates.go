@@ -14,7 +14,7 @@ type TemplateData struct {
 	Users []db.User
 	Count int
 	URL   map[string]string
-	Test  string
+	Flash string
 }
 
 func humanDate(t time.Time) string {
