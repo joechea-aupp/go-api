@@ -27,6 +27,13 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
+
+    <!-- initialize flowbite components after an htmx request, -->
+    <script>
+      htmx.onLoad(function (content) {
+        initFlowbite();
+      });
+    </script>
   </body>
 </html>
 {{end}}
