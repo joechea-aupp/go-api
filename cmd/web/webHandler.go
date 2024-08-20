@@ -6,6 +6,7 @@ import (
 
 	"github.com/joechea-aupp/go-api/cmd/helper"
 	"github.com/joechea-aupp/go-api/internal/db"
+	"github.com/joechea-aupp/go-api/internal/validator"
 	"github.com/joechea-aupp/go-api/ui"
 	"github.com/julienschmidt/httprouter"
 )
@@ -165,4 +166,83 @@ func (web *Web) postForm(w http.ResponseWriter, r *http.Request) {
 
 	// redirect user to /user with status code of 303
 	http.Redirect(w, r, "/users", http.StatusSeeOther)
+}
+
+func (web *Web) formValidator(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	field := params.ByName("field")
+
+	err := r.ParseForm()
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	message := ""
+
+	submitBtn := fmt.Sprintf(`
+      <button
+        disabled
+        type="submit"
+        hx-swap-oob="outerHTML"
+        id="submit-button"
+        class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-200 dark:bg-gray-500 dark:text-gray-400 dark:border-gray-300"
+      >
+      Submit
+    </button>
+		`)
+
+	if _, ok := r.Form[field]; !ok {
+		helper.ResponseWithError(w, http.StatusBadRequest, "field does not exist")
+		return
+	}
+
+	if field == "floating_username" {
+		username := r.Form.Get("floating_username")
+		if !validator.MinChars(username, 3) {
+			message = "Username must be at least 3 characters long"
+			errorResponse := fmt.Sprintf(`
+		<p class="validate_field mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oops!</span>%s</p>
+	`, message)
+
+			errorResponse += submitBtn
+
+			helper.ResponseWithHyperMedia(w, http.StatusOK, errorResponse)
+			return
+		}
+	}
+
+	if field == "floating_email" {
+		email := r.Form.Get("floating_email")
+		if !validator.Matches(email, validator.EmailRX) {
+			message = "Invalid email address"
+			errorResponse := fmt.Sprintf(`
+		<p class="validate_field mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oops!</span>%s</p>
+	`, message)
+
+			errorResponse += submitBtn
+
+			helper.ResponseWithHyperMedia(w, http.StatusOK, errorResponse)
+			return
+		}
+	}
+
+	submitBtn = `
+	<button
+      type="submit"
+      hx-swap-oob="true"
+      id="submit-button"
+      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+    >
+      Submit
+    </button>
+	`
+
+	message = fmt.Sprintf(`
+				<p class="validate_field"></p>
+			`)
+
+	message += submitBtn
+
+	helper.ResponseWithHyperMedia(w, http.StatusOK, message)
 }

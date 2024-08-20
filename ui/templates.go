@@ -16,6 +16,7 @@ type TemplateData struct {
 	Count int
 	URL   map[string]string
 	Flash string
+	Form  any
 }
 
 func humanDate(t time.Time) string {
