@@ -30,29 +30,29 @@ func (web *Web) render(w http.ResponseWriter, status int, page string, data *ui.
 }
 
 func (web *Web) users(w http.ResponseWriter, r *http.Request) {
-	params := httprouter.ParamsFromContext(r.Context())
+	queryParam := r.URL.Query()
 
-	if params.ByName("start") == "" {
-		params = append(params, httprouter.Param{Key: "start", Value: "0"})
+	startParam := queryParam.Get("start")
+	if startParam == "" {
+		startParam = "0"
 	}
 
-	if params.ByName("limit") == "" {
-		params = append(params, httprouter.Param{Key: "limit", Value: "2"})
+	limitParam := queryParam.Get("limit")
+	if limitParam == "" {
+		limitParam = "2"
 	}
 
-	start, err := strconv.ParseInt(params.ByName("start"), 10, 64)
+	start, err := strconv.ParseInt(startParam, 10, 64)
 	if err != nil {
 		helper.ResponseWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	limit, err := strconv.ParseInt(params.ByName("limit"), 10, 64)
+	limit, err := strconv.ParseInt(limitParam, 10, 64)
 	if err != nil {
 		helper.ResponseWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-
-	fmt.Printf("start %d limit %d", start, limit)
 
 	users, err := web.User.GetUsers(start, limit)
 	if err != nil {
@@ -61,6 +61,21 @@ func (web *Web) users(w http.ResponseWriter, r *http.Request) {
 	}
 
 	web.templateData.Users = users
+
+	// get total number of users
+	userCount, err := web.User.TotalUsers()
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	web.templateData.Form = struct {
+		TotalUsers int64
+		Start      int
+	}{
+		TotalUsers: userCount,
+		Start:      int(start),
+	}
 
 	web.templateData.Flash = web.sessionManager.PopString(r.Context(), "flash")
 	web.render(w, http.StatusOK, "users.tmpl.html", web.templateData)

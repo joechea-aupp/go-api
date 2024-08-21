@@ -83,6 +83,16 @@ func (u *UserService) GetUsers(start, limit int64) ([]User, error) {
 	return users, nil
 }
 
+func (u *UserService) TotalUsers() (int64, error) {
+	count, err := u.Collection.EstimatedDocumentCount(context.TODO())
+	if err != nil {
+		log.Println("error:", err)
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func (u *UserService) DelUser(id string) error {
 	// convert string to ObjectID
 	objectID, err := primitive.ObjectIDFromHex(id)

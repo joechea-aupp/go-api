@@ -31,11 +31,16 @@ func objIDString(id primitive.ObjectID) string {
 	return id.Hex()
 }
 
+func addStart(start, increase int) int {
+	return int(start) + increase
+}
+
 func NewTemplateCache() (map[string]*template.Template, error) {
 	functions := template.FuncMap{
 		"currentURL":  func() string { return middleware.Feed.Web["path"] },
 		"humanDate":   humanDate,
 		"objIDString": objIDString,
+		"addStart":    addStart,
 	}
 	cache := map[string]*template.Template{}
 
