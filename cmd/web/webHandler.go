@@ -3,6 +3,7 @@ package web
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/joechea-aupp/go-api/cmd/helper"
 	"github.com/joechea-aupp/go-api/internal/db"
@@ -29,7 +30,31 @@ func (web *Web) render(w http.ResponseWriter, status int, page string, data *ui.
 }
 
 func (web *Web) users(w http.ResponseWriter, r *http.Request) {
-	users, err := web.User.GetUsers()
+	params := httprouter.ParamsFromContext(r.Context())
+
+	if params.ByName("start") == "" {
+		params = append(params, httprouter.Param{Key: "start", Value: "0"})
+	}
+
+	if params.ByName("limit") == "" {
+		params = append(params, httprouter.Param{Key: "limit", Value: "2"})
+	}
+
+	start, err := strconv.ParseInt(params.ByName("start"), 10, 64)
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	limit, err := strconv.ParseInt(params.ByName("limit"), 10, 64)
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	fmt.Printf("start %d limit %d", start, limit)
+
+	users, err := web.User.GetUsers(start, limit)
 	if err != nil {
 		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
 		return

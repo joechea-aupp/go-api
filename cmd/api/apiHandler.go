@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/joechea-aupp/go-api/cmd/helper"
 	"github.com/joechea-aupp/go-api/internal/db"
@@ -32,8 +33,29 @@ func (api *Api) getUser(w http.ResponseWriter, r *http.Request) {
 	helper.ResponseWithJSON(w, http.StatusOK, user)
 }
 
-func (api *Api) getUsers(w http.ResponseWriter, _ *http.Request) {
-	users, err := api.User.GetUsers()
+func (api *Api) getUsers(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+	if params.ByName("start") == "" {
+		params = append(params, httprouter.Param{Key: "start", Value: "0"})
+	}
+
+	if params.ByName("limit") == "" {
+		params = append(params, httprouter.Param{Key: "limit", Value: "2"})
+	}
+
+	start, err := strconv.ParseInt(params.ByName("start"), 10, 64)
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	limit, err := strconv.ParseInt(params.ByName("limit"), 10, 64)
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	users, err := api.User.GetUsers(start, limit)
 	if err != nil {
 		helper.ResponseWithError(w, http.StatusNotFound, "user not found")
 		return

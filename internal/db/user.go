@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -65,10 +66,12 @@ func (u *UserService) GetUser(username string) (User, error) {
 	return user, nil
 }
 
-func (u *UserService) GetUsers() ([]User, error) {
+func (u *UserService) GetUsers(start, limit int64) ([]User, error) {
 	var users []User
 
-	cursor, err := u.Collection.Find(context.TODO(), bson.D{})
+	findOptions := options.Find().SetLimit(limit).SetSkip(start)
+
+	cursor, err := u.Collection.Find(context.TODO(), bson.D{}, findOptions)
 	if err != nil {
 		panic(err)
 	}
