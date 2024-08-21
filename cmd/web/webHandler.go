@@ -220,18 +220,6 @@ func (web *Web) formValidator(w http.ResponseWriter, r *http.Request) {
 
 	message := ""
 
-	submitBtn := fmt.Sprintf(`
-      <button
-        disabled
-        type="submit"
-        hx-swap-oob="outerHTML"
-        id="submit-button"
-        class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-200 dark:bg-gray-500 dark:text-gray-400 dark:border-gray-300"
-      >
-      Submit
-    </button>
-		`)
-
 	if _, ok := r.Form[field]; !ok {
 		helper.ResponseWithError(w, http.StatusBadRequest, "field does not exist")
 		return
@@ -244,8 +232,6 @@ func (web *Web) formValidator(w http.ResponseWriter, r *http.Request) {
 			errorResponse := fmt.Sprintf(`
 		<p class="validate_field mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oops!</span>%s</p>
 	`, message)
-
-			errorResponse += submitBtn
 
 			helper.ResponseWithHyperMedia(w, http.StatusOK, errorResponse)
 			return
@@ -260,29 +246,14 @@ func (web *Web) formValidator(w http.ResponseWriter, r *http.Request) {
 		<p class="validate_field mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oops!</span>%s</p>
 	`, message)
 
-			errorResponse += submitBtn
-
 			helper.ResponseWithHyperMedia(w, http.StatusOK, errorResponse)
 			return
 		}
 	}
 
-	submitBtn = `
-	<button
-      type="submit"
-      hx-swap-oob="true"
-      id="submit-button"
-      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-    >
-      Submit
-    </button>
-	`
-
 	message = fmt.Sprintf(`
 				<p class="validate_field"></p>
 			`)
-
-	message += submitBtn
 
 	helper.ResponseWithHyperMedia(w, http.StatusOK, message)
 }
