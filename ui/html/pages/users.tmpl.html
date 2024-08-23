@@ -1,4 +1,17 @@
 {{define "main"}}
+<style>
+  #loading {
+    display: none;
+  }
+  #loading.htmx-request + .btn-text {
+    display: none;
+  }
+
+  #loading.htmx-request {
+    display: inline-block;
+  }
+</style>
+
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
   <h1 class="my-2 text-lg">
     Total User:{{if .Form.TotalUsers}}
@@ -38,31 +51,30 @@
           >
         </td>
       </tr>
-      </tr>
-      {{end}}
-
-      {{if gt .Form.TotalUsers (addStart .Form.Start 2)}}
-        <tr>
-          <td
-            colspan="4"
-            class="px-6 py-4 text-center"
-            style="text-align: center"
+      {{end}} {{if gt .Form.TotalUsers (addStart .Form.Start 2)}}
+      <tr>
+        <td
+          colspan="4"
+          class="px-6 py-4 text-center"
+          style="text-align: center"
+        >
+          <button
+            type="button"
+            class="btn-more my-5 px-5 py-2.5 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            hx-target="closest tr"
+            hx-swap="outerHTML"
+            hx-select="tbody > tr"
+            hx-get="/users?start={{addStart .Form.Start 2}}"
+            hx-indicator="#loading"
           >
-            <button
-              type="button"
-              class="my-5 px-5 py-2.5 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              hx-target="closest tr"
-              hx-swap="outerHTML"
-              hx-select="tbody > tr"
-              hx-get="/users?start={{addStart .Form.Start 2}}"
+            <span class="htmx-indicator btn-loading" id="loading"
+              >Loading...</span
             >
-              Load more...
-            </button>
-          </td>
+            <span class="btn-text">Load more...</span>
+          </button>
+        </td>
       </tr>
-        {{end}}
-
-      {{else}}
+      {{end}} {{else}}
 
       <tr
         class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
