@@ -14,8 +14,10 @@
 
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
   <h1 class="my-2 text-lg">
-    Total User:{{if .Form.TotalUsers}}
-    <span id="userCount" class="font-bold">{{.Form.TotalUsers}}</span>{{end}}
+    Total User:
+    <span hx-trigger="load" hx-get="/userCount" id="userCount" class="font-bold"
+      >Loading</span
+    >
   </h1>
   <table
     class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"

@@ -50,4 +50,5 @@ func (web *Web) Routes(router *httprouter.Router, sessionManager *scs.SessionMan
 	router.Handler(http.MethodGet, "/form", webLog.ThenFunc(app.getForm))
 	router.Handler(http.MethodPost, "/form", webLog.ThenFunc(app.postForm))
 	router.Handler(http.MethodPost, "/form-validate/:field", webLog.ThenFunc(app.formValidator))
+	router.Handler(http.MethodGet, "/userCount", webLog.ThenFunc(app.getUserCount))
 }

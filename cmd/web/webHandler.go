@@ -257,3 +257,17 @@ func (web *Web) formValidator(w http.ResponseWriter, r *http.Request) {
 
 	helper.ResponseWithHyperMedia(w, http.StatusOK, message)
 }
+
+func (web *Web) getUserCount(w http.ResponseWriter, _ *http.Request) {
+	userCount, err := web.User.TotalUsers()
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response := fmt.Sprintf(`
+		<span id="userCount" class="font-bold">%d</span>
+	`, userCount)
+
+	helper.ResponseWithHyperMedia(w, http.StatusOK, response)
+}
