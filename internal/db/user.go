@@ -109,6 +109,17 @@ func (u *UserService) DelUser(id string) error {
 	return nil
 }
 
+func (u *UserService) DelUsers(ids []primitive.ObjectID) error {
+	filter := bson.D{{Key: "_id", Value: bson.D{{Key: "$in", Value: ids}}}}
+
+	_, err := u.Collection.DeleteMany(context.TODO(), filter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (u *UserService) UpdateUser(id string, data User) error {
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

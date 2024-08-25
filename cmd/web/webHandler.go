@@ -10,6 +10,8 @@ import (
 	"github.com/joechea-aupp/go-api/internal/validator"
 	"github.com/joechea-aupp/go-api/ui"
 	"github.com/julienschmidt/httprouter"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (web *Web) render(w http.ResponseWriter, status int, page string, data *ui.TemplateData) {
@@ -275,4 +277,27 @@ func (web *Web) getUserCount(w http.ResponseWriter, _ *http.Request) {
 	`, userCount)
 
 	helper.ResponseWithHyperMedia(w, http.StatusOK, response)
+}
+
+func (web *Web) deleteUsers(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	userIDs := r.Form["input-box-user-id"]
+	objectIDs := make([]primitive.ObjectID, len(userIDs))
+
+	for id, userID := range userIDs {
+		oid, err := primitive.ObjectIDFromHex(userID)
+		if err != nil {
+			helper.ResponseWithError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		objectIDs[id] = oid
+	}
+
+	err := web.User.DelUsers(objectIDs)
+	if err != nil {
+		helper.ResponseWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	http.Redirect(w, r, "/users", http.StatusSeeOther)
 }
