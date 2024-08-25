@@ -141,6 +141,11 @@ func (web *Web) deleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.Header.Get("HX-Trigger") == "inline-delete" {
+		helper.ResponseWithHyperMedia(w, http.StatusOK, "")
+		return
+	}
+
 	web.sessionManager.Put(r.Context(), "flash", "User deleted successfully")
 
 	http.Redirect(w, r, "/users", http.StatusSeeOther)

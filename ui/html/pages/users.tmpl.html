@@ -48,8 +48,16 @@
         <td class="px-6 py-4">
           <a
             href="/user/{{.Username}}"
-            class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+            class="mx-2 font-medium text-blue-600 dark:text-blue-500 hover:underline"
             >Edit</a
+          >
+          <a
+            href="#"
+            hx-delete="/user/{{objIDString .ID}}"
+            hx-target="closest tr"
+            class="mx-2 font-medium text-blue-600 dark:text-blue-500 hover:underline"
+            id="inline-delete"
+            >Delete</a
           >
         </td>
       </tr>
